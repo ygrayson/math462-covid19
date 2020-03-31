@@ -24,7 +24,7 @@ dataCases = load('covid_data.dat'); %we still need to get the data for this
 %Plot the data.
 figure
 hold on
-plot(dataA(:,1),dataA(:,2),'.');
+plot(dataCases(:,1),dataCases(:,2),'.');
 xlabel('Time (days)');
 ylabel('Total numbers of case counts');
 title('Number of case counts as a function of time');
