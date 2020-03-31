@@ -19,7 +19,7 @@
         y is the number of case counts for infection.
 
 %}
-dataCases = load('covid_data.dat'); %we still need to get the data for this
+dataCases = load('covid_data.txt'); %we still need to get the data for this
 
 %Plot the data.
 figure
