@@ -4,10 +4,10 @@
     This is the model we used for the ebola outbreak problem from lab 3:
 
     Sdot = -BSI                   Change in susceptible population
-    Edot = BSI - AE               Change in susceptible population
-    Idot = AE - rI                Change in susceptible population
-    Rdot = rI                     Change in susceptible population
-    ydot = NAE                    Change in susceptible population
+    Edot = BSI - AE               Change in exposed population
+    Idot = AE - rI                Change in infected population
+    Rdot = rI                     Change in recovered population
+    ydot = NAE                    Change in case counts
     
 %}
 function dydt = covidseirode(t,x,params)
