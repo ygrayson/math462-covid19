@@ -19,7 +19,11 @@
         y is the number of case counts for infection.
 
 %}
-dataCases = load('covid_data.txt'); %we still need to get the data for this
+
+%Data has three colums (hours, case counts, days)
+%There should be a bug somewhere for the time, we should be able to do this
+%in days
+dataCases = load('covid_data.txt');
 
 %Plot the data.
 figure
@@ -29,10 +33,10 @@ xlabel('Time (hours)');
 ylabel('Total numbers of case counts');
 title('Number of case counts as a function of time');
 
-B = .7828; %Beta
-A = .3816; %Alpha 
-r = .7602; %Gamma
-N = 700000; %This is the total number of people 
+B = 1.5811; %Beta
+A = .9525; %Alpha 
+r = 1.5659; %Gamma
+N = 2000000; %This is the total number of people 
 
 %Define the initial conditions.
 I0 = dataCases(1,2)./N;
@@ -66,16 +70,3 @@ v0 = [B,A,r];
 %fminsearch helps find the minimal value for the parameters. Which in turns
 %optimizes the ODE.
 varpars = fminsearch(fun1,v0);
-%{
-B = varpars(1);
-A = varpars(2);
-r = varpars(3);
-params = [B,A,r];
-
-tspan = dataCases(:,1);
-options = odeset('AbsTol',1e-8,'RelTol',1e-8);
-fun = @(t,x) covidseirode(t,x,params);
-[t,xsol] = ode45(fun,tspan,x0,options);
-plot(tspan,xsol(:,5),'*');
-%}
-
