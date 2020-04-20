@@ -28,6 +28,6 @@ function dydt = covidseirode(t,x,params)
     Idot = A.*E - r.*I;
     Rdot = r.*I;
     ydot = N.*A.*E;
-    dxdt = [Idot;Edot;Sdot;Rdot;ydot];
+    dydt = [Sdot;Edot;Idot;Rdot;ydot];
     
 end
