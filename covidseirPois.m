@@ -8,7 +8,7 @@ function LL = covidseirPois(v)
     B = v(1);
     A = v(2);
     r = v(3);
-    N = 700000;
+    N = 2000000;
 
 
     I0 = data1(1)./N;
