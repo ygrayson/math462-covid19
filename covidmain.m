@@ -28,14 +28,14 @@ dataCases = load('covid_data.txt');
 %Plot the data.
 figure
 hold on
-plot(dataCases(:,1),dataCases(:,2),'.');
+plot(dataCases(:,3),dataCases(:,2),'.');
 xlabel('Time (hours)');
 ylabel('Total numbers of case counts');
 title('Number of case counts as a function of time');
 
-B = 1.5811; %Beta
-A = .9525; %Alpha 
-r = 1.5659; %Gamma
+B = 1.4876; %Beta
+A = .7238; %Alpha 
+r = 1.4701; %Gamma
 N = 2000000; %This is the total number of people 
 
 %Define the initial conditions.
@@ -49,13 +49,14 @@ y0 = N.*A.*E0;
 params = [B,A,r,N];
 x0 = [S0,E0,I0,R0,y0];
 tspan = dataCases(:,1);
+tdays = dataCases(:,3);
 
 %Call the function seirode to evaluate the values and then plot the
 %ydot solutions vs time.
 options = odeset('AbsTol',1e-8,'RelTol',1e-8);
 fun = @(t,x) covidseirode(t,x,params);
 [t,xsol] = ode45(fun,tspan,x0,options);
-plot(tspan,xsol(:,5),'*');
+plot(tdays,xsol(:,5),'*');
 
 %use fminsearch (nelder meed)
 %seir_cost :
@@ -70,3 +71,39 @@ v0 = [B,A,r];
 %fminsearch helps find the minimal value for the parameters. Which in turns
 %optimizes the ODE.
 varpars = fminsearch(fun1,v0);
+
+%Average cost of hospitalization of a respiratory system diagnosis with 
+%ventilator support for more than 96 hours is $40,128. For less severe
+%cases, the total cost will be on average $13,297. 
+
+%About 15% of the people that are infected will need to be hospitalized.
+
+%About 15% of the people that will be hospitalized are expected to be 
+%in serious care. 
+
+%And about 2 to 7% of people who will be hospitalized will be uninsured. 
+
+%We should model the amount of hospital beds and ventilators that the
+%county has and do a "birth death" system to show more of an accurate cost
+%model for the SEIR model we have made.
+
+
+
+
+
+
+
+
+%{
+B = varpars(1);
+A = varpars(2);
+r = varpars(3);
+params = [B,A,r];
+
+tspan = dataCases(:,1);
+options = odeset('AbsTol',1e-8,'RelTol',1e-8);
+fun = @(t,x) covidseirode(t,x,params);
+[t,xsol] = ode45(fun,tspan,x0,options);
+plot(tspan,xsol(:,5),'*');
+%}
+
