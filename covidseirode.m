@@ -10,7 +10,7 @@
     ydot = NAE                    Change in case counts
     
 %}
-function dydt = covidseirode(t,x,params)
+function dydt = covidseirode(~,x,params)
 
     B = params(1);
     A = params(2);
@@ -28,6 +28,6 @@ function dydt = covidseirode(t,x,params)
     Idot = A.*E - r.*I;
     Rdot = r.*I;
     ydot = N.*A.*E;
-    dxdt = [Idot;Edot;Sdot;Rdot;ydot];
+    dydt = [Sdot;Edot;Idot;Rdot;ydot];
     
 end
