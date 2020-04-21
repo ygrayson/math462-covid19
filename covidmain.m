@@ -58,11 +58,6 @@ fun = @(t,x) covidseirode(t,x,params);
 [t,xsol] = ode45(fun,tspan,x0,options);
 plot(tdays,xsol(:,5),'*');
 
-%use fminsearch (nelder meed)
-%seir_cost :
-% inputs: alpha, beta and gamma
-% outputs is -LL = {sum(y(ti))-sum(zi*ln(y(ti)))}
-
 %This portion solves for the Poisson LL to help determine better 
 %parameters for the SEIR model to better fit the data.
 
@@ -70,7 +65,29 @@ fun1 = @(v) covidseirPois(v);
 v0 = [B,A,r];
 %fminsearch helps find the minimal value for the parameters. Which in turns
 %optimizes the ODE.
-varpars = fminsearch(fun1,v0);
+varparsPois = fminsearch(fun1,v0);
+
+%This portion solves for the least squares to help determine better 
+%parameters for the SEIR model to better fit the data.
+
+fun2 = @(v) covidseirLS(v);
+u0 = [B,A,r];
+%fminsearch helps find the minimal value for the parameters. Which in turns
+%optimizes the ODE.
+varparsLS = fminsearch(fun2,u0);
+
+B = 1.4886; %Beta
+A = .9885; %Alpha 
+r = 1.4741; %Gamma
+
+params = [B,A,r,N];
+x0 = [S0,E0,I0,R0,y0];
+
+options = odeset('AbsTol',1e-8,'RelTol',1e-8);
+fun = @(t,x) covidseirode(t,x,params);
+[t,xsol] = ode45(fun,tspan,x0,options);
+plot(tdays,xsol(:,5),'x');
+
 
 %Average cost of hospitalization of a respiratory system diagnosis with 
 %ventilator support for more than 96 hours is $40,128. For less severe
@@ -81,18 +98,26 @@ varpars = fminsearch(fun1,v0);
 %About 15% of the people that will be hospitalized are expected to be 
 %in serious care. 
 
-%And about 2 to 7% of people who will be hospitalized will be uninsured. 
+%And about 2 to 7% of people who will be hospitalized will be uninsured. So
+%we are going approximate it by 5.5%
+
+%Detroit has 4,123 hospital beds and 509 ICU beds and Michigan as a state
+%has 2000 ventilators
 
 %We should model the amount of hospital beds and ventilators that the
 %county has and do a "birth death" system to show more of an accurate cost
 %model for the SEIR model we have made.
 
+seriousCareCost = 40128;
+regularCareCost = 13297;
 
+hospitalizedPeople = ceil(.15.*xsol(end,5));
+uninsuredPeople = ceil(.05.*hospitalizedPeople);
+seriousCarePeople = ceil(.15.*uninsuredPeople);
+regularCarePeople = uninsuredPeople - seriousCarePeople;
 
-
-
-
-
+%Here is the total cost to the government
+totalCost = seriousCareCost.*seriousCarePeople + regularCarePeople.*regularCareCost;
 
 %{
 B = varpars(1);
@@ -106,4 +131,3 @@ fun = @(t,x) covidseirode(t,x,params);
 [t,xsol] = ode45(fun,tspan,x0,options);
 plot(tspan,xsol(:,5),'*');
 %}
-
