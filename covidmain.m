@@ -115,14 +115,26 @@ saveas(gcf, "./plots/optimal_params.jpg");
 
 seriousCareCost = 40128;
 regularCareCost = 13297;
+lastDay = dataCases(end,3);
 
-hospitalizedPeople = ceil(.15.*xsol(end,5));
-uninsuredPeople = ceil(.05.*hospitalizedPeople);
-seriousCarePeople = ceil(.15.*uninsuredPeople);
-regularCarePeople = uninsuredPeople - seriousCarePeople;
+totalCostPerDay = zeros(lastDay-1,1);
+ydot = zeros(lastDay - 1,1);
 
-%Here is the total cost to the government
-totalCost = seriousCareCost.*seriousCarePeople + regularCarePeople.*regularCareCost;
+for ii = 1:(lastDay - 1)
+    ydot(ii) = xsol(ii+1,5) - xsol(ii,5);
+    hospitalizedPeople = ceil(.15.*ydot(ii));
+    uninsuredPeople = ceil(.05.*hospitalizedPeople);
+    seriousCarePeople = ceil(.15.*uninsuredPeople);
+    regularCarePeople = uninsuredPeople - seriousCarePeople;
+    
+    %Here is the total cost to the government fro the day
+    totalCostPerDay(ii) = seriousCareCost.*seriousCarePeople + regularCarePeople.*regularCareCost;
+end
+
+figure
+days = 1:dataCases(end - 1,3);
+bar(days,totalCostPerDay(:));
+ylim([0 225000]);
 
 %{
 B = varpars(1);
