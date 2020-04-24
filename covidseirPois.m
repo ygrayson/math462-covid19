@@ -24,7 +24,7 @@ function LL = covidseirPois(v)
 
     options = odeset('AbsTol',1e-8,'RelTol',1e-8);
     fun = @(t,x) covidseirode(t,x,params);
-    [t,xsol] = ode45(fun,tspan,x0,options);
+    [~,xsol] = ode45(fun,tspan,x0,options);
     ydot = xsol(:,5);
     zdot = data1(:).*log(ydot(:));
     LL = sum(ydot) - sum(zdot);

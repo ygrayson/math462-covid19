@@ -16,7 +16,7 @@
         E is the number of exposed people.
         I is the number of infected people.
         R is the number of recovered people.
-        y is the number of case counts for infection.
+        y is the number of total case counts for infection.
 
 %}
 
@@ -24,14 +24,18 @@
 %There should be a bug somewhere for the time, we should be able to do this
 %in days
 dataCases = load('covid_data.txt');
+days = dataCases(:, 3);
+hours = dataCases(:, 1);
+case_count = dataCases(:, 2);
 
 %Plot the data.
-figure
-hold on
-plot(dataCases(:,3),dataCases(:,2),'.');
+figure;
+hold on;
+plot(days, case_count, '.');
 xlabel('Time (hours)');
 ylabel('Total numbers of case counts');
 title('Number of case counts as a function of time');
+%saveas(gcf, "./plots/raw_data.jpg");
 
 B = 1.4876; %Beta
 A = .7238; %Alpha 
@@ -55,7 +59,7 @@ tdays = dataCases(:,3);
 %ydot solutions vs time.
 options = odeset('AbsTol', 1e-8, 'RelTol', 1e-8);
 fun = @(t,x) covidseirode(t,x,params);
-[t,xsol] = ode45(fun,tspan,x0,options);
+[~,xsol] = ode45(fun,tspan,x0,options);
 plot(tdays,xsol(:,5),'*');
 
 %This portion solves for the Poisson LL to help determine better 
@@ -87,6 +91,7 @@ options = odeset('AbsTol',1e-8,'RelTol',1e-8);
 fun = @(t,x) covidseirode(t,x,params);
 [t,xsol] = ode45(fun,tspan,x0,options);
 plot(tdays,xsol(:,5),'x');
+saveas(gcf, "./plots/optimal_params.jpg");
 
 
 %Average cost of hospitalization of a respiratory system diagnosis with 
