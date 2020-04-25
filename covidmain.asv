@@ -134,7 +134,7 @@ figure;
 days = 1:dataCases(end - 1,3);
 bar(days,totalCostPerDay(:));
 ylim([0 225000]);
-saveas(gcf, './plots/costs.jpg');
+
 %{
 B = varpars(1);
 A = varpars(2);
